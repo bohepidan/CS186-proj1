@@ -123,23 +123,25 @@ AS
 -- Question 3iii
 CREATE VIEW q3iii(namefirst, namelast, lslg)
 AS
-  SELECT p.namefirst, p.namelast, (sum(b.H)+sum(b.H2B)+sum(b.H3B)*2+sum(b.HR)*3+0.0)/(sum(b.AB)+0.0) 
+  SELECT p.namefirst, p.namelast, (sum(b.H)+sum(b.H2B)+sum(b.H3B)*2+sum(b.HR)*3+0.0)/(sum(b.AB)+0.0) as lslg
   FROM people p INNER JOIN batting b
   ON p.playerid = b.playerid
   GROUP BY p.playerid, p.namefirst, p.namelast
-  HAVING  > (
+  HAVING lslg > (
     SELECT (sum(b.H)+sum(b.H2B)+sum(b.H3B)*2+sum(b.HR)*3+0.0)/(sum(b.AB)+0.0)
     FROM people p INNER JOIN batting b
     ON p.playerid = b.playerid and p.playerid = 'mayswi01'
-  )
+  ) and sum(b.AB) > 50
 ;
 
 -- Question 4i
 CREATE VIEW q4i(yearid, min, max, avg)
 AS
-  SELECT 1, 1, 1, 1 -- replace this line
+  SELECT yearid, min(salary), max(salary), avg(salary)
+  FROM salaries s
+  GROUP BY yearid
+  ORDER BY yearid
 ;
-
 
 -- Helper table for 4ii
 DROP TABLE IF EXISTS binids;

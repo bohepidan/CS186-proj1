@@ -149,10 +149,23 @@ CREATE TABLE binids(binid);
 INSERT INTO binids VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9);
 
 -- Question 4ii
+CREATE VIEW srange2016(low, high)
+AS
+  SELECT min(salary), max(salary)
+  FROM salaries s
+  WHERE s.yearid = 2016
+;
 CREATE VIEW q4ii(binid, low, high, count)
 AS
-  SELECT 1, 1, 1, 1 -- replace this line
-;
+  SELECT binid, (sr.high-sr.low)/10*b.binid + sr.low as lowval, (sr.high-sr.low)/10*(b.binid+1) + sr.low as highval, count(*)
+  FROM binids b, salaries s, srange2016 sr
+  ON s.yearid = 2016
+  WHERE (b.binid < 9 and s.salary < highval 
+    and s.salary >= lowval) or 
+    (b.binid = 9 and s.salary <= highval
+    and s.salary >= lowval)
+  GROUP BY b.binid
+; 
 
 -- Question 4iii
 CREATE VIEW q4iii(yearid, mindiff, maxdiff, avgdiff)

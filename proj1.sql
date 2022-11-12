@@ -168,18 +168,44 @@ AS
 ; 
 
 -- Question 4iii
+CREATE VIEW sdat(yearid, minsal, maxsal, avgsal)
+AS
+  SELECT yearid, min(salary), max(salary), avg(salary)
+  FROM salaries
+  GROUP BY yearid
+;
 CREATE VIEW q4iii(yearid, mindiff, maxdiff, avgdiff)
 AS
-  SELECT 1, 1, 1, 1 -- replace this line
+  SELECT s1.yearid, s1.minsal - s2.minsal, s1.maxsal - s2.maxsal, s1.avgsal - s2.avgsal
+  FROM sdat s1 INNER JOIN sdat s2
+  ON s1.yearid = s2.yearid+1
+  GROUP BY s1.yearid
 ;
 
 -- Question 4iv
+CREATE VIEW maxs(yearid, maxsal)
+AS
+  SELECT yearid, max(salary)
+  FROM salaries
+  GROUP BY yearid
+;
 CREATE VIEW q4iv(playerid, namefirst, namelast, salary, yearid)
 AS
-  SELECT 1, 1, 1, 1, 1 -- replace this line
+  SELECT p.playerid, namefirst, namelast, s.salary, s.yearid
+  FROM people p INNER JOIN salaries s
+  ON p.playerid = s.playerid INNER JOIN maxs ss 
+  ON s.yearid = ss.yearid
+  WHERE s.salary = ss.maxsal
+  GROUP BY s.yearid
+  HAVING (s.yearid = 2000 or s.yearid = 2001)
 ;
 -- Question 4v
 CREATE VIEW q4v(team, diffAvg) AS
-  SELECT 1, 1 -- replace this line
+  SELECT a.teamid, max(s.salary) - min(s.salary)
+  FROM teams t INNER JOIN allstarfull a 
+  ON t.teamid = a.teamid INNER JOIN salaries s
+  ON s.playerid = a.playerid and s.yearid = a.yearid
+  WHERE a.yearid = 2016
+  GROUP BY a.teamid 
 ;
 
